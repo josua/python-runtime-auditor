@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Python Runtime Auditor · Local report</title>
+  <link rel="stylesheet" href="assets/report.css">
+  <script src="assets/report.js" defer></script>
+</head>
+<body>
+  <main>
+    <header>
+      <div class="brand-mark" aria-hidden="true">Py</div>
+      <div><p class="eyebrow">LOCAL DIAGNOSTICS / v0.1</p><h1>Python Runtime Auditor</h1><p class="lead">Understand the Python environments on this machine before changing them.</p></div>
+      <span class="status">Read-only audit</span>
+    </header>
+    <section class="metrics" aria-label="Audit overview">
+      <article><p>Executable paths</p><strong id="metric-paths">—</strong><span>Includes pythonw, aliases and copies</span></article>
+      <article><p>Runtime folders</p><strong id="metric-runtimes">—</strong><span>Candidate installations and environments</span></article>
+      <article><p>Virtual environments</p><strong id="metric-venvs">—</strong><span>Observed pyvenv.cfg files</span></article>
+      <article><p>Findings to review</p><strong id="metric-findings">—</strong><span>Evidence, not an uninstall verdict</span></article>
+    </section>
+    <aside class="notice"><strong>A path count is not an installation count.</strong> File versions come from metadata. Discovered interpreters were not executed. An environment with no observed dependents may still be in use.</aside>
+    <section class="workspace" aria-label="Detailed audit">
+      <nav aria-label="Report sections" id="tabs">
+        <button data-view="runtimes" aria-pressed="true">Runtime folders</button>
+        <button data-view="dependencies" aria-pressed="false">Dependencies</button>
+        <button data-view="files" aria-pressed="false">All paths</button>
+        <button data-view="commands" aria-pressed="false">Commands</button>
+        <button data-view="findings" aria-pressed="false">Findings</button>
+        <button data-view="issues" aria-pressed="false">Scan issues</button>
+      </nav>
+      <div class="toolbar"><div><h2 id="section-title">Runtime folders</h2><p id="section-help"></p></div><div class="search"><label for="search">Filter this section</label><input id="search" type="search" placeholder="Path, category, version…" autocomplete="off"></div></div>
+      <p class="result-count" id="result-count" aria-live="polite"></p>
+      <div class="table-scroll"><table><thead id="table-head"></thead><tbody id="table-body"></tbody></table></div>
+      <p id="empty-state" hidden>No entries match this filter.</p>
+    </section>
+    <section class="coverage"><h2>Scan coverage</h2><p id="coverage"></p><p>Permission failures and excluded locations limit coverage. Linux interpreters inside WSL, containers and archives are outside this Windows executable scan.</p><p>This report contains local filesystem paths. Review it before sharing.</p></section>
+    <footer><span>Software and documentation written by <strong>SolGPT 6.1</strong>, an AI coding agent used in Codex, at the request of <strong>Philippe Jos</strong>.</span><span>Local files only · No telemetry</span></footer>
+  </main>
+  <script type="application/json" id="audit-data"><!--AUDIT_DATA--></script>
+</body>
+</html>

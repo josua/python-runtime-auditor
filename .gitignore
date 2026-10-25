@@ -1,0 +1,17 @@
+reports/
+**/reports/
+output/
+verification/
+.private/
+.playwright-cli/
+node_modules/
+.venv/
+__pycache__/
+.env
+.env.*
+!.env.example
+*.log
+*.exe
+*.dll
+*.zip
+*.user

@@ -1,0 +1,14 @@
+name: Windows tests
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  audit-tests:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - name: Verify scanner, dependency analysis and offline report
+        shell: pwsh
+        run: ./tests/run-tests.ps1
