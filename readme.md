@@ -45,14 +45,35 @@ From PowerShell:
 .\start-python-runtime-auditor.ps1 -Roots 'C:\Dev','D:\Tools' -OpenReport
 ```
 
-Without `-Roots`, all ready local fixed/removable drives are scanned. Include
-network drives only when explicitly requested:
+The following are **three independent, alternative examples**. **Run only the
+one that matches your needs; do not run all three in sequence.** Each command
+starts a new audit. The paths are examples: replace them with your own folders.
+
+**Example 1 — Scan local drives and include network drives.** Without `-Roots`,
+all ready local fixed/removable drives are scanned. Add `-IncludeNetworkDrives`
+only when you also want to scan network drives:
 
 ```powershell
-.\start-python-runtime-auditor.ps1 -IncludeNetworkDrives
-.\start-python-runtime-auditor.ps1 -Roots 'C:\Dev' -ExcludePaths 'C:\Dev\archives'
-.\start-python-runtime-auditor.ps1 -OutputDirectory 'D:\python-audits'
+.\start-python-runtime-auditor.ps1 -IncludeNetworkDrives -OpenReport
 ```
+
+**Example 2 — Scan one folder and exclude its archives subfolder:**
+
+```powershell
+.\start-python-runtime-auditor.ps1 -Roots 'C:\Dev' -ExcludePaths 'C:\Dev\archives' -OpenReport
+```
+
+**Example 3 — Scan local drives and save reports in a chosen output folder.**
+`-OutputDirectory` changes where reports are saved; it does not limit the scan
+to that folder:
+
+```powershell
+.\start-python-runtime-auditor.ps1 -OutputDirectory 'D:\python-audits' -OpenReport
+```
+
+`-OpenReport` opens the generated HTML report in your default browser after the
+scan and analysis finish. Omit it for unattended or scripted runs; the report
+is still generated.
 
 A full scan can take several minutes on a machine with many directories.
 Progress shows actual directories and matches, without an invented percentage.
