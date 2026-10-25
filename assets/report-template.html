@@ -13,7 +13,7 @@
   <main>
     <header>
       <div class="brand-mark" aria-hidden="true">Py</div>
-      <div><p class="eyebrow">LOCAL DIAGNOSTICS / v0.2</p><h1>Python Runtime Auditor</h1><p class="lead">Understand the Python environments on this machine before changing them.</p></div>
+      <div><p class="eyebrow">LOCAL DIAGNOSTICS / v0.3</p><h1>Python Runtime Auditor</h1><p class="lead">Understand the Python environments on this machine before changing them.</p></div>
       <span class="status">Read-only audit</span>
     </header>
     <section class="metrics" aria-label="Audit overview">
@@ -26,6 +26,9 @@
     <section class="workspace" aria-label="Detailed audit">
       <nav aria-label="Report sections" id="tabs">
         <button data-view="runtimes" aria-pressed="true"><!--ICON:file-code-->Runtime folders</button>
+        <button data-view="packages" aria-pressed="false"><!--ICON:file-code-->Packages</button>
+        <button data-view="packageLocations" aria-pressed="false"><!--ICON:scan-->Package coverage</button>
+        <button data-view="packageIssues" aria-pressed="false"><!--ICON:shield-check-->Package issues</button>
         <button data-view="dependencies" aria-pressed="false"><!--ICON:hierarchy-2-->Dependencies</button>
         <button data-view="files" aria-pressed="false"><!--ICON:scan-->All paths</button>
         <button data-view="commands" aria-pressed="false"><!--ICON:terminal-2-->Commands</button>
@@ -33,6 +36,9 @@
         <button data-view="issues" aria-pressed="false"><!--ICON:search-->Scan issues</button>
       </nav>
       <div class="toolbar"><div><h2 id="section-title">Runtime folders</h2><p id="section-help"></p></div><div class="search"><label for="search">Filter this section</label><input id="search" type="search" placeholder="Path, category, version…" autocomplete="off"></div></div>
+      <div class="runtime-controls" id="runtime-controls"><button type="button" data-runtime-filter="">All runtimes</button><button type="button" data-runtime-filter="Microsoft Store">Microsoft Store</button></div>
+      <div class="package-controls" id="package-controls" hidden><label for="package-environment">Environment / package scope<select id="package-environment"><option value="">All environments and user sites</option></select></label><p id="package-scope-info"></p></div>
+      <p class="package-help" id="package-help" hidden></p>
       <p class="result-count" id="result-count" aria-live="polite"></p>
       <p class="date-help">Click a column heading to sort. File creation and modification are filesystem timestamps, not proof of installation. Install dates are installer-supplied Windows registry values matched by installation directory; they may reflect repairs or updates. Missing dates stay unknown. Times use your browser's local timezone.</p>
       <div class="table-scroll"><table><thead id="table-head"></thead><tbody id="table-body"></tbody></table></div>

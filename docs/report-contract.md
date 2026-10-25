@@ -52,3 +52,10 @@ stronger directory convention or environment metadata applies, the category is
 
 No output is a deletion plan. Coverage must be interpreted with inaccessible
 directories, link targets, explicit exclusions and the final `Completed` flag.
+
+Package outputs have their own `SchemaVersion: 1` in `package-summary.json`.
+They observe known package directories at analysis/refresh time, independently
+of executable discovery. Environment IDs and metadata paths identify entries;
+names are not global deduplication keys. Shared user sites have distinct IDs.
+See [package-inventory.md](package-inventory.md) for the fields, known layouts,
+size evidence and exclusions. Older reports without package files remain valid.

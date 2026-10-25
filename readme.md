@@ -45,6 +45,7 @@ installation can break current virtual environments.
 | --- | --- |
 | <img src="docs/assets/icons/search.svg" width="26" alt=""> | **Discover** runtimes beyond PATH, in selected folders or across local drives. |
 | <img src="docs/assets/icons/hierarchy-2.svg" width="26" alt=""> | **Connect** virtual environments to their configured base runtime. |
+| <img src="docs/assets/icons/file-code.svg" width="26" alt=""> | **Identify packages** per environment, with versions, paths and declared size estimates. |
 | <img src="docs/assets/icons/terminal-2.svg" width="26" alt=""> | **Diagnose** command resolution and empty command shadows. |
 | <img src="docs/assets/icons/browser.svg" width="26" alt=""> | **Explore** the offline report in a dedicated browser application window. |
 | <img src="docs/assets/icons/shield-check.svg" width="26" alt=""> | **Review** evidence without automatic uninstallation, deletion or PATH changes. |
@@ -56,6 +57,9 @@ installation can break current virtual environments.
   managed/base runtimes, Conda and virtual environments, with evidence for each label.
   Unknown ownership stays explicitly unclassified.
 - Reads `pyvenv.cfg` to link environments to their configured base Python.
+- Reads `METADATA` / `PKG-INFO` and `RECORD` to inventory packages by environment.
+  Find where Open WebUI, PyTorch or Transformers was installed, without running
+  Python or pip. Shared user sites appear separately; imports are not tested.
 - Records command resolution for `python`, `python3`, `py` and `pip`, including
   empty extensionless files that can shadow a real launcher.
 - Exports CSV, JSON and incremental JSONL, plus a searchable offline HTML report.
@@ -173,6 +177,19 @@ the report needs no server, account, telemetry or network connection.
 
 ## Reports and limits
 
+### Find a package and its Python environment
+
+In **Packages**, search for `open-webui`, `torch` or `transformers`, then filter
+by environment. **View packages** in Runtime folders opens that environment
+directly. Package versions are preserved per environment rather than merged.
+**Package coverage** and **Package issues** show the limits of each observation.
+
+Sizes are estimates from declared `RECORD` bytes, not measured disk usage or
+space that can safely be reclaimed. Unknown estimates stay unknown. User-site
+packages are separate candidates, not proof of visibility to a given Python.
+See [the package inventory guide](docs/package-inventory.md) for refresh commands,
+location coverage and how to exclude current-user sites.
+
 Each run creates a timestamped directory. Main outputs include:
 
 | File | Purpose |
@@ -181,6 +198,9 @@ Each run creates a timestamped directory. Main outputs include:
 | `python-executables.jsonl` | Findings flushed as the filesystem scan progresses |
 | `python-classification.csv` / `.json` | Classification, evidence and configured base directory |
 | `runtime-folders.json` | Candidate runtime folders, grouping executable variants |
+| `python-packages.csv` / `.json` | Distribution names, versions, environment paths, requirements and declared size estimates |
+| `package-environments.json` / `package-locations.json` | Package scopes and examined location coverage |
+| `package-summary.json` / `package-issues.json` | Refresh time, size basis and metadata failures |
 | `base-runtime-dependencies.json` | Observed base-Python → venv relationships |
 | `command-resolution.json` | Commands visible in the auditor PowerShell process |
 | `audit-findings.json` | Conflicts or inaccessible configured base directories to review |
@@ -236,7 +256,7 @@ pwsh -NoProfile -File .\tests\run-tests.ps1
 
 Tests require no external modules and do not execute the fixture executables.
 See [contributing.md](contributing.md) and [docs/report-contract.md](docs/report-contract.md).
-Windows is the tested target for v0.1; cross-platform support is future work.
+Windows is the tested target; cross-platform support is future work.
 
 Generate a synthetic preview without scanning any drives:
 

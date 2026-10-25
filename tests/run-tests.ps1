@@ -47,7 +47,7 @@ try {
     Assert ($csv.Count -eq 6) 'CSV and JSON counts agree'
     Assert (@($files | Where-Object { -not $_.CreationTimeUtc -or -not $_.LastWriteTimeUtc }).Count -eq 0) 'Scanner records UTC file creation and modification timestamps'
     Assert ((Get-Content -LiteralPath (Join-Path $scan.ReportDirectory 'python-executables.jsonl')).Count -eq 6) 'Incremental journal retains every discovered path'
-    $audit=& (Join-Path $repo 'scripts/analyze-python-inventory.ps1') -ReportDirectory $scan.ReportDirectory -PassThru
+    $audit=& (Join-Path $repo 'scripts/analyze-python-inventory.ps1') -ReportDirectory $scan.ReportDirectory -PassThru -SkipUserSitePackages
     Assert ($audit.VirtualEnvironments -eq 1) 'python/pythonw pair produces one observed venv configuration'
     Assert ($audit.RuntimeFolders -eq 5) 'Executable variants group into candidate runtime folders'
     $classified=Read-Json (Join-Path $scan.ReportDirectory 'python-classification.json')
@@ -78,11 +78,12 @@ try {
     Assert ($html.Contains('SolGPT 6.1') -and $html.Contains('Philippe Jos')) 'Report includes requested authorship and human project role'
     Assert ([regex]::Matches($html,'<svg class="icon"').Count -ge 11 -and $html -notmatch '<!--ICON:') 'Report embeds all navigation and metric SVG icons inline'
     Assert ($html.Contains('Copyright (c) 2020-2026 Paweł Kuna') -and $html.Contains('aria-hidden="true"')) 'Inline SVGs retain their license and decorative accessibility state'
+    . (Join-Path $PSScriptRoot 'package-inventory-tests.ps1')
     $empty=Join-Path $fixture 'empty'
     $null=New-Item -ItemType Directory -Path $empty
     $emptyScan=& (Join-Path $repo 'scripts/list-python-executables.ps1') -Roots $empty -OutputDirectory (Join-Path $outputRoot 'empty-reports') -PassThru
     Assert ($emptyScan.Completed -and $emptyScan.ExecutablesFound -eq 0) 'Empty scans still produce a completed report'
-    $emptyAudit=& (Join-Path $repo 'scripts/analyze-python-inventory.ps1') -ReportDirectory $emptyScan.ReportDirectory -PassThru
+    $emptyAudit=& (Join-Path $repo 'scripts/analyze-python-inventory.ps1') -ReportDirectory $emptyScan.ReportDirectory -PassThru -SkipUserSitePackages
     & (Join-Path $repo 'scripts/new-audit-report.ps1') -ReportDirectory $emptyScan.ReportDirectory
     Assert ($emptyAudit.ExecutablePaths -eq 0 -and $emptyAudit.RuntimeFolders -eq 0) 'Empty inventory analysis is supported'
     . (Join-Path $repo 'scripts/report-browser.ps1')

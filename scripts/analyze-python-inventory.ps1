@@ -1,6 +1,6 @@
 #requires -Version 7.2
 [CmdletBinding()]
-param([Parameter(Mandatory)][string]$ReportDirectory, [switch]$PassThru)
+param([Parameter(Mandatory)][string]$ReportDirectory, [switch]$PassThru, [switch]$SkipUserSitePackages)
 $ErrorActionPreference = 'Stop'
 $report = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($ReportDirectory)
 $rows = @(Get-Content -LiteralPath (Join-Path $report 'python-executables.json') -Raw | ConvertFrom-Json)
@@ -94,6 +94,11 @@ $runtimes = @($analysis | Where-Object { $_.Category -in $runtimeCategories } | 
     $dependents=@($dependencies | Where-Object { $_.ResolvedBaseHome -eq $resolvedRoot } | ForEach-Object { $_.Environments } | Sort-Object -Unique)
     [pscustomobject]@{
         Root=$_.Name;Category=$group[0].Category;Paths=$group.Count
+        DisplayName=$(if ($_.Name -match '(?i)\\WindowsApps\\PythonSoftwareFoundation\.Python\.(\d+\.\d+)_') {
+            $storeVersion=@($group.FileVersion | Where-Object {$_} | Sort-Object -Unique) -join ', '
+            if (-not $storeVersion) { $storeVersion=$Matches[1] }
+            'Python '+$storeVersion+' · Microsoft Store'
+        } else { $null })
         FileVersions=@($group.FileVersion | Where-Object { $_ } | Sort-Object -Unique)
         RegisteredInstallDate=($group.RegisteredInstallDate | Where-Object { $_ } | Sort-Object | Select-Object -Last 1)
         InstallDateSources=@($group.InstallDateSource | Where-Object { $_ } | Sort-Object -Unique)
@@ -130,6 +135,7 @@ $summary=[pscustomobject]@{
     Mode='Read-only metadata audit; no interpreter execution, uninstall or PATH changes'
 }
 Write-Json 'audit-summary.json' $summary
+& (Join-Path $PSScriptRoot 'inventory-python-packages.ps1') -ReportDirectory $report -SkipUserSitePackages:$SkipUserSitePackages
 $categories | Format-Table -AutoSize | Out-String | Write-Host
 Write-Host "Audit complete: $($summary.RuntimeFolders) candidate runtime folders, $($summary.VirtualEnvironments) venv configurations."
 if ($PassThru) { Write-Output $summary }

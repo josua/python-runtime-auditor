@@ -7,11 +7,17 @@ $assets=Join-Path (Split-Path $PSScriptRoot -Parent) 'assets'
 function Read-ReportJson([string]$Name) {
     return Get-Content -LiteralPath (Join-Path $report $Name) -Raw | ConvertFrom-Json -NoEnumerate
 }
+function Read-OptionalJson([string]$Name) {
+    if (Test-Path -LiteralPath (Join-Path $report $Name)) { Read-ReportJson $Name }
+}
 $payload=[ordered]@{
     scan=(Read-ReportJson 'scan-summary.json');summary=(Read-ReportJson 'audit-summary.json')
     files=(Read-ReportJson 'python-classification.json');runtimes=(Read-ReportJson 'runtime-folders.json')
     dependencies=(Read-ReportJson 'base-runtime-dependencies.json');commands=(Read-ReportJson 'command-resolution.json')
     findings=(Read-ReportJson 'audit-findings.json');issues=(Read-ReportJson 'scan-issues.json')
+    packages=(Read-OptionalJson 'python-packages.json');packageSummary=(Read-OptionalJson 'package-summary.json')
+    packageEnvironments=(Read-OptionalJson 'package-environments.json');packageLocations=(Read-OptionalJson 'package-locations.json')
+    packageIssues=(Read-OptionalJson 'package-issues.json')
 }
 # JSON is data inside a script element; escape HTML delimiters to prevent closing that element.
 $encoded=(ConvertTo-Json -InputObject $payload -Depth 20 -Compress).Replace('<','\u003c').Replace('>','\u003e').Replace('&','\u0026')

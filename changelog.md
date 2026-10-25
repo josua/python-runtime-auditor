@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.3.0 — 2026-10-25
+
+- Static package inventory per runtime, with names, versions, metadata paths,
+  raw dependency declarations and estimated logical sizes from RECORD.
+- Separate current-user package scopes, including Microsoft Store Python sites.
+- Search/filter/sort packages, open an environment's packages from Runtime folders,
+  and inspect package location coverage and metadata issues.
+- Refresh package observations from an existing inventory without rescanning drives.
+- Legacy egg-info support, bounded metadata reads, linked metadata exclusions and
+  explicit unknown/partial size evidence; no Python, pip or startup code execution.
+- Updated offline/public synthetic demo, documentation and focused regression tests.
+- Readable Microsoft Store Python labels and a quick filter, without substituting
+  file creation timestamps for unknown registry installation dates.
+
 ## 0.2.0 — 2026-10-25
 
 - Detect installed browsers and open reports in a Chromium application window,
