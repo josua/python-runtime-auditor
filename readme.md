@@ -1,8 +1,8 @@
 # Python Runtime Auditor
 
-<p align="center"><img src="assets/python-runtime-auditor.svg" width="112" height="112" alt="Python Runtime Auditor: Python snakes inside a magnifying glass"></p>
+<p align="center"><img src="assets/python-runtime-auditor.svg" width="512" alt="Python Runtime Auditor: Python snakes inside a magnifying glass"></p>
 
-<p align="center"><img src="docs/assets/project-banner.svg" alt="Python Runtime Auditor — Every Python. In context. Find runtimes, trace dependencies, review before removing." width="1200"></p>
+<p align="center"><img src="docs/assets/project-banner.svg" alt="Python Runtime Auditor — Find Python installations, installed packages and environment dependencies." width="1200"></p>
 
 <p align="center">
   <a href="https://github.com/josua/python-runtime-auditor/actions/workflows/windows-tests.yml"><img src="https://github.com/josua/python-runtime-auditor/actions/workflows/windows-tests.yml/badge.svg" alt="Windows tests"></a>
