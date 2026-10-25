@@ -1,13 +1,38 @@
 # Python Runtime Auditor
 
+<p align="center"><img src="docs/assets/project-banner.svg" alt="Python Runtime Auditor — Every Python. In context. Find runtimes, trace dependencies, review before removing." width="1200"></p>
+
+<p align="center">
+  <a href="https://github.com/josua/python-runtime-auditor/actions/workflows/windows-tests.yml"><img src="https://github.com/josua/python-runtime-auditor/actions/workflows/windows-tests.yml/badge.svg" alt="Windows tests"></a>
+  <a href="https://github.com/josua/python-runtime-auditor/releases/latest"><img src="https://img.shields.io/github/v/release/josua/python-runtime-auditor?color=4b91c9" alt="Latest release"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-91cfae" alt="License: MIT"></a>
+  <img src="https://img.shields.io/badge/platform-Windows-447fc1" alt="Platform: Windows">
+  <img src="https://img.shields.io/badge/PowerShell-7.2%2B-548ac7" alt="PowerShell 7.2 or later">
+  <img src="https://img.shields.io/badge/audit-read--only-91cfae" alt="Read-only audit">
+</p>
+
+<p align="center">
+  <a href="https://josua.github.io/python-runtime-auditor/"><strong>Project website</strong></a> ·
+  <a href="https://josua.github.io/python-runtime-auditor/demo/"><strong>Interactive demo</strong></a> ·
+  <a href="https://github.com/josua/python-runtime-auditor/releases/latest"><strong>Download</strong></a> ·
+  <a href="#run"><strong>Installation</strong></a>
+</p>
+
 Find the Python executables on a Windows machine, understand which environments
-depend on them, and inspect command-routing conflicts before changing anything.
+depend on them, and inspect command-routing conflicts **before changing anything**.
+
+<p>
+  <img src="docs/assets/icons/skill-windows.svg" width="44" height="44" alt="Windows">
+  <img src="docs/assets/icons/skill-powershell.svg" width="44" height="44" alt="PowerShell">
+  <img src="docs/assets/icons/skill-python.svg" width="44" height="44" alt="Python">
+  <img src="docs/assets/icons/skill-github.svg" width="44" height="44" alt="GitHub">
+</p>
 
 **Code and documentation developed by SolGPT 6.1, an AI coding agent used in
 Codex, at the request of Philippe Jos.** See [authors.md](authors.md) for the
 precise contribution history. MIT licensed.
 
-![Offline dashboard using synthetic demonstration data](docs/images/report.png)
+[![Offline dashboard using synthetic demonstration data](docs/images/report.png)](https://josua.github.io/python-runtime-auditor/demo/)
 
 An executable count is not an installation count. A single Python distribution
 can contain `python.exe`, `pythonw.exe`, venv launcher templates and aliases.
@@ -15,6 +40,14 @@ Applications also ship private Python runtimes. Removing an apparently old base
 installation can break current virtual environments.
 
 ## What it does
+
+| | From filesystem paths to evidence |
+| --- | --- |
+| <img src="docs/assets/icons/search.svg" width="26" alt=""> | **Discover** runtimes beyond PATH, in selected folders or across local drives. |
+| <img src="docs/assets/icons/hierarchy-2.svg" width="26" alt=""> | **Connect** virtual environments to their configured base runtime. |
+| <img src="docs/assets/icons/terminal-2.svg" width="26" alt=""> | **Diagnose** command resolution and empty command shadows. |
+| <img src="docs/assets/icons/browser.svg" width="26" alt=""> | **Explore** the offline report in a dedicated browser application window. |
+| <img src="docs/assets/icons/shield-check.svg" width="26" alt=""> | **Review** evidence without automatic uninstallation, deletion or PATH changes. |
 
 - Traverses selected drives or folders, including hidden directories, application
   bundles, caches and virtual environments. It does not depend on `py` or PATH.
@@ -26,10 +59,23 @@ installation can break current virtual environments.
 - Records command resolution for `python`, `python3`, `py` and `pip`, including
   empty extensionless files that can shadow a real launcher.
 - Exports CSV, JSON and incremental JSONL, plus a searchable offline HTML report.
+- Shows file creation/modification timestamps and matched installer registry
+  dates separately. Click column headers to sort; recent file creation appears
+  first in runtime and path views. Unknown dates are not invented.
 
 It does **not** execute discovered interpreters, uninstall software, modify PATH,
 delete files or decide that a runtime is unused. Classification contains documented
 heuristics. A file-version string is metadata, not a verified Python runtime version.
+
+<details>
+<summary><strong>Why 173 executable paths does not mean 173 Python installations</strong></summary>
+
+One distribution can include both console and windowed executables, copies,
+launcher templates and virtual-environment entry points. The report groups paths
+into candidate runtime folders and records observed dependencies. The number is
+an example, not a claim about every machine or a deletion recommendation.
+
+</details>
 
 ## Run
 
@@ -170,6 +216,17 @@ The focus here is a standalone Windows filesystem audit with an offline report,
 directory-based ownership evidence, observed venv dependencies and command conflicts.
 The exhaustive scan is deliberately available when a manager's inventory is not
 enough; it is not claimed to be faster or more complete than every other tool.
+
+## Website and visual credits
+
+[The project website](https://josua.github.io/python-runtime-auditor/) is published
+with GitHub Pages. Its interactive report demo contains synthetic data only;
+the website cannot scan a visitor's machine.
+
+Tabler pictograms come from The Grid's local icon library; technology tiles come
+from Skill Icons. Both are MIT licensed, with their notices retained. SVGs in
+generated reports are embedded inline and need no icon CDN.
+See [icon-attribution.md](docs/icon-attribution.md) for sources and licenses.
 
 ## Development
 

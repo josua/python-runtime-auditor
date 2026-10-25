@@ -132,6 +132,7 @@ try {
                             $row = [pscustomobject][ordered]@{
                                 Path=$file; ResolvedPath=$targetPath; FileVersion=$version; Kind=$kind
                                 IsAlias=$isAlias; Bytes=$info.Length
+                                CreationTimeUtc=$info.CreationTimeUtc.ToString('o'); LastWriteTimeUtc=$info.LastWriteTimeUtc.ToString('o')
                             }
                             $results.Add($row)
                             $journal.WriteLine(($row | ConvertTo-Json -Compress))
@@ -153,7 +154,7 @@ try {
     $csvPath = Join-Path $reportDirectory 'python-executables.csv'
     $jsonPath = Join-Path $reportDirectory 'python-executables.json'
     if ($sorted.Count -gt 0) { $sorted | Export-Csv -LiteralPath $csvPath -NoTypeInformation -Delimiter ';' -Encoding utf8BOM }
-    else { 'Path;ResolvedPath;FileVersion;Kind;IsAlias;Bytes' | Set-Content -LiteralPath $csvPath -Encoding utf8BOM }
+    else { 'Path;ResolvedPath;FileVersion;Kind;IsAlias;Bytes;CreationTimeUtc;LastWriteTimeUtc' | Set-Content -LiteralPath $csvPath -Encoding utf8BOM }
     ConvertTo-Json -InputObject $sorted -Depth 5 | Set-Content -LiteralPath $jsonPath -Encoding utf8
     ConvertTo-Json -InputObject $issues.ToArray() -Depth 5 | Set-Content -LiteralPath (Join-Path $reportDirectory 'scan-issues.json') -Encoding utf8
     ConvertTo-Json -InputObject $links.ToArray() -Depth 5 | Set-Content -LiteralPath (Join-Path $reportDirectory 'directory-links.json') -Encoding utf8

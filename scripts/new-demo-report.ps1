@@ -23,6 +23,16 @@ $runtimes=@(
     @{Root=$venv;Category='virtual-environment';Paths=2;FileVersions=@('3.12.0');ObservedDependentEnvironments=@();Executables=@($files[2].Path,$files[3].Path)},
     @{Root=$embedded;Category='embedded-runtime';Paths=1;FileVersions=@('3.11.0');ObservedDependentEnvironments=@();Executables=@($files[4].Path)}
 )
+for ($index=0;$index -lt $files.Count;$index++) {
+    $files[$index].CreationTimeUtc=([datetime]::new(2026,10,1,12,0,0,[DateTimeKind]::Utc)).AddDays($index).ToString('o')
+    $files[$index].LastWriteTimeUtc=$files[$index].CreationTimeUtc
+    $files[$index].FileDateSource='Synthetic demonstration timestamp'
+}
+$files[0].RegisteredInstallDate='2026-10-01';$files[0].InstallDateSource='Synthetic installer registry example'
+for ($index=0;$index -lt $runtimes.Count;$index++) {
+    $runtimes[$index].FirstFileCreatedUtc=$files[$index*2].CreationTimeUtc
+}
+$runtimes[0].RegisteredInstallDate='2026-10-01';$runtimes[0].InstallDateSources=@('Synthetic installer registry example')
 Save-Json 'scan-summary.json' @{Completed=$true;DirectoriesVisited=125;ElapsedSeconds=0.2;Roots=@('C:\demo');IsSynthetic=$true;Scope='Synthetic demonstration; no filesystem was scanned'}
 Save-Json 'audit-summary.json' @{ExecutablePaths=9;RuntimeFolders=3;VirtualEnvironments=1;Findings=1;IsSynthetic=$true}
 Save-Json 'python-classification.json' $files

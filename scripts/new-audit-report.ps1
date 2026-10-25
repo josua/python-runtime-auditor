@@ -16,6 +16,13 @@ $payload=[ordered]@{
 # JSON is data inside a script element; escape HTML delimiters to prevent closing that element.
 $encoded=(ConvertTo-Json -InputObject $payload -Depth 20 -Compress).Replace('<','\u003c').Replace('>','\u003e').Replace('&','\u0026')
 $template=Get-Content -LiteralPath (Join-Path $assets 'report-template.html') -Raw
+$template=[regex]::Replace($template,'<!--ICON:([a-z0-9-]+)-->',{
+    param($match)
+    $icon=Get-Content -LiteralPath (Join-Path $assets ('icons/'+$match.Groups[1].Value+'.svg')) -Raw
+    return $icon.Replace('<svg ','<svg class="icon" aria-hidden="true" focusable="false" ').Trim()
+})
+$iconLicense=Get-Content -LiteralPath (Join-Path $assets 'icons/tabler-license.txt') -Raw
+$template=$template.Replace('<!--ICON_LICENSE-->',('<!-- Inline icons: Tabler Icons. '+$iconLicense.Replace('--','- -')+' -->'))
 $html=$template.Replace('<!--AUDIT_DATA-->',$encoded)
 $html | Set-Content -LiteralPath (Join-Path $report 'report.html') -Encoding utf8
 $destination=Join-Path $report 'assets'

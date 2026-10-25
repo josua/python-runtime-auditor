@@ -4,6 +4,8 @@ param([Parameter(Mandatory)][string]$ReportDirectory, [switch]$PassThru)
 $ErrorActionPreference = 'Stop'
 $report = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($ReportDirectory)
 $rows = @(Get-Content -LiteralPath (Join-Path $report 'python-executables.json') -Raw | ConvertFrom-Json)
+. (Join-Path $PSScriptRoot 'file-dates.ps1')
+$installRegistrations=@(Get-RegisteredInstallDates)
 $findings = [Collections.Generic.List[object]]::new()
 function Write-Json([string]$Name, [object]$Value) {
     ConvertTo-Json -InputObject $Value -Depth 12 | Set-Content -LiteralPath (Join-Path $report $Name) -Encoding utf8
@@ -59,10 +61,13 @@ $analysis = @(
         elseif ($path -match '^[A-Z]:\\Python\d+\\|\\Programs\\Python\\Python\d+\\|\\Local\\python\\pythoncore-|\\WindowsApps\\PythonSoftwareFoundation\.Python\.\d') { $category='standalone-runtime'; $action='Check dependent environments and scripts before uninstalling'; $evidence='Conventional Python installation directory' }
         if ([IO.Path]::GetFileName($runtimeRoot) -eq 'bin' -and $category -in @('embedded-runtime','unclassified-runtime')) { $runtimeRoot=[IO.Path]::GetDirectoryName($runtimeRoot) }
         if ($baseHome) { $baseExists=Test-Path -LiteralPath $baseHome -PathType Container -ErrorAction SilentlyContinue }
+        $dates=Get-ExecutableDates -Path $path -InventoryRow $row -Registrations $installRegistrations
         [pscustomobject][ordered]@{
             Path=$path;Category=$category;FileVersion=$row.FileVersion;RuntimeRoot=$runtimeRoot
             SuggestedAction=$action;Evidence=$evidence;VenvConfiguration=$config;BaseHome=$baseHome
             ResolvedBaseHome=(Resolve-Directory $baseHome);BaseDirectoryAccessible=$baseExists
+            CreationTimeUtc=$dates.CreationTimeUtc;LastWriteTimeUtc=$dates.LastWriteTimeUtc;FileDateSource=$dates.FileDateSource
+            RegisteredInstallDate=$dates.RegisteredInstallDate;InstallDateSource=$dates.InstallDateSource
         }
     }
 )
@@ -90,6 +95,10 @@ $runtimes = @($analysis | Where-Object { $_.Category -in $runtimeCategories } | 
     [pscustomobject]@{
         Root=$_.Name;Category=$group[0].Category;Paths=$group.Count
         FileVersions=@($group.FileVersion | Where-Object { $_ } | Sort-Object -Unique)
+        RegisteredInstallDate=($group.RegisteredInstallDate | Where-Object { $_ } | Sort-Object | Select-Object -Last 1)
+        InstallDateSources=@($group.InstallDateSource | Where-Object { $_ } | Sort-Object -Unique)
+        FirstFileCreatedUtc=($group.CreationTimeUtc | Where-Object { $_ } | Sort-Object | Select-Object -First 1)
+        LastFileModifiedUtc=($group.LastWriteTimeUtc | Where-Object { $_ } | Sort-Object | Select-Object -Last 1)
         Executables=@($group.Path);ObservedDependentEnvironments=$dependents
         CleanupVerdict='Not determined: no observed dependency does not prove that a runtime is unused'
     }

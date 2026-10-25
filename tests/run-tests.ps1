@@ -45,11 +45,17 @@ try {
     Assert (@($files | Where-Object { $_.Path -match 'pythonw.exe$' }).Count -eq 1) 'Windowed executable is retained as a separate path'
     $csv=@(Import-Csv -LiteralPath (Join-Path $scan.ReportDirectory 'python-executables.csv') -Delimiter ';')
     Assert ($csv.Count -eq 6) 'CSV and JSON counts agree'
+    Assert (@($files | Where-Object { -not $_.CreationTimeUtc -or -not $_.LastWriteTimeUtc }).Count -eq 0) 'Scanner records UTC file creation and modification timestamps'
     Assert ((Get-Content -LiteralPath (Join-Path $scan.ReportDirectory 'python-executables.jsonl')).Count -eq 6) 'Incremental journal retains every discovered path'
     $audit=& (Join-Path $repo 'scripts/analyze-python-inventory.ps1') -ReportDirectory $scan.ReportDirectory -PassThru
     Assert ($audit.VirtualEnvironments -eq 1) 'python/pythonw pair produces one observed venv configuration'
     Assert ($audit.RuntimeFolders -eq 5) 'Executable variants group into candidate runtime folders'
     $classified=Read-Json (Join-Path $scan.ReportDirectory 'python-classification.json')
+    . (Join-Path $repo 'scripts/file-dates.ps1')
+    $dateFixture=Get-ExecutableDates -Path (Join-Path $base 'python.exe') -Registrations @([pscustomobject]@{Root=$base;Date='2026-10-20';Source='Synthetic registration';Name='Fixture Python'})
+    Assert ($dateFixture.RegisteredInstallDate -eq '2026-10-20' -and $dateFixture.CreationTimeUtc) 'Installation date evidence stays separate from file creation metadata'
+    $noRegistration=Get-ExecutableDates -Path (Join-Path $sibling 'python.exe') -Registrations @([pscustomobject]@{Root=$excluded;Date='2026-10-20';Source='Synthetic registration';Name='Fixture Python'})
+    Assert ($null -eq $noRegistration.RegisteredInstallDate -and $noRegistration.FileDateSource -match 'analysis time') 'Old inventories gain file dates without guessing installation dates or matching sibling prefixes'
     Assert (@($classified | Where-Object Category -eq 'conda-environment').Count -eq 1) 'Conda environments use conda-meta evidence'
     Assert (@($classified | Where-Object Category -eq 'unclassified-runtime').Count -ge 1) 'Unknown ownership stays unclassified'
     $dependencies=Read-Json (Join-Path $scan.ReportDirectory 'base-runtime-dependencies.json')
@@ -70,6 +76,8 @@ try {
     Assert ($html.Contains('\u003c/script\u003e')) 'HTML delimiters are escaped inside embedded JSON'
     Assert ((Test-Path -LiteralPath (Join-Path $scan.ReportDirectory 'assets/report.js'))) 'Offline report contains its local JavaScript asset'
     Assert ($html.Contains('SolGPT 6.1') -and $html.Contains('Philippe Jos')) 'Report includes requested authorship and human project role'
+    Assert ([regex]::Matches($html,'<svg class="icon"').Count -ge 11 -and $html -notmatch '<!--ICON:') 'Report embeds all navigation and metric SVG icons inline'
+    Assert ($html.Contains('Copyright (c) 2020-2026 Paweł Kuna') -and $html.Contains('aria-hidden="true"')) 'Inline SVGs retain their license and decorative accessibility state'
     $empty=Join-Path $fixture 'empty'
     $null=New-Item -ItemType Directory -Path $empty
     $emptyScan=& (Join-Path $repo 'scripts/list-python-executables.ps1') -Roots $empty -OutputDirectory (Join-Path $outputRoot 'empty-reports') -PassThru
