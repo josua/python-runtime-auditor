@@ -77,6 +77,49 @@ try {
     $emptyAudit=& (Join-Path $repo 'scripts/analyze-python-inventory.ps1') -ReportDirectory $emptyScan.ReportDirectory -PassThru
     & (Join-Path $repo 'scripts/new-audit-report.ps1') -ReportDirectory $emptyScan.ReportDirectory
     Assert ($emptyAudit.ExecutablePaths -eq 0 -and $emptyAudit.RuntimeFolders -eq 0) 'Empty inventory analysis is supported'
+    . (Join-Path $repo 'scripts/report-browser.ps1')
+    $browserReport=Join-Path $fixture 'report with spaces-é-#-100%.html'
+    Copy-Item -LiteralPath (Join-Path $scan.ReportDirectory 'report.html') -Destination $browserReport
+    $browserData=Join-Path $fixture 'browser data'
+    $edge=[pscustomobject]@{Name='edge';DisplayName='Edge fixture';Path='C:\Test Browsers\msedge.exe';Mode='app';Priority=0}
+    $chrome=[pscustomobject]@{Name='chrome';DisplayName='Chrome fixture';Path='C:\Test Browsers\chrome.exe';Mode='app';Priority=1}
+    $firefox=[pscustomobject]@{Name='firefox';DisplayName='Firefox fixture';Path='C:\Test Browsers\firefox.exe';Mode='window';Priority=4}
+    $plan=Get-ReportBrowserPlan -Candidate $edge -ReportPath $browserReport -BrowserDataDirectory $browserData
+    Assert (([uri]$plan.Url).LocalPath -eq $browserReport) 'Report URI preserves Unicode, spaces, # and percent characters'
+    Assert ($plan.Arguments -contains ('--app='+$plan.Url)) 'Chromium app launch targets the generated local report'
+    Assert ($plan.ProfileDirectory.StartsWith($browserData+'\') -and $plan.CacheDirectory.StartsWith($browserData+'\')) 'Browser profile and cache use a dedicated location'
+    Assert ($plan.Arguments -contains '--disk-cache-size=67108864') 'Report browser uses a modest disk-cache size hint'
+    $otherEdge=[pscustomobject]@{Name='edge';Path='C:\Test Browsers\Beta\msedge.exe';Mode='app'}
+    $otherPlan=Get-ReportBrowserPlan -Candidate $otherEdge -ReportPath $browserReport -BrowserDataDirectory $browserData
+    Assert ($plan.ProfileDirectory -ne $otherPlan.ProfileDirectory) 'Separate browser installations get distinct profiles'
+    $firefoxPlan=Get-ReportBrowserPlan -Candidate $firefox -ReportPath $browserReport -BrowserDataDirectory $browserData
+    Assert ($firefoxPlan.Arguments[0] -eq '--new-window' -and $null -eq $firefoxPlan.ProfileDirectory) 'Firefox uses a documented new-window fallback without Chromium flags'
+    Assert ((ConvertFrom-BrowserCommand '"C:\Test Browsers\chrome.exe" --ignored "%1"') -eq 'C:\Test Browsers\chrome.exe') 'Registered browser commands retain only the quoted executable path'
+    $preview=Open-ReportBrowser -ReportPath $browserReport -BrowserDataDirectory $browserData -Candidates @($firefox,$chrome,$edge) -WhatIf
+    Assert ($preview.Browser -eq 'edge' -and -not (Test-Path -LiteralPath $browserData)) 'WhatIf prefers app mode and creates no browser data'
+    $preview=& (Join-Path $repo 'open-audit-report.ps1') -ReportPath $browserReport -BrowserDataDirectory $browserData -Browser default -WhatIf -PassThru
+    Assert ($preview.Mode -eq 'default') 'Standalone report opener supports the ordinary default-application option'
+    $nativeBrowserStarter=(Get-Item Function:\Start-ReportBrowserProcess).ScriptBlock
+    $attempts=[Collections.Generic.List[string]]::new()
+    try {
+        function Start-ReportBrowserProcess {
+            param($Plan)
+            $attempts.Add($Plan.Browser)
+            if ($Plan.Browser -eq 'edge') { throw 'Synthetic startup failure' }
+            return 1234
+        }
+        $opened=Open-ReportBrowser -ReportPath $browserReport -BrowserDataDirectory $browserData -Candidates @($firefox,$chrome,$edge) -WarningAction SilentlyContinue
+        Assert (($attempts -join ',') -eq 'edge,chrome' -and $opened.Browser -eq 'chrome') 'Automatic selection tries the next app browser after a startup failure'
+        $attempts.Clear();$explicitFailure=$false
+        try { $null=Open-ReportBrowser -ReportPath $browserReport -BrowserDataDirectory $browserData -Browser edge -Candidates @($edge,$chrome) } catch { $explicitFailure=$true }
+        Assert ($explicitFailure -and ($attempts -join ',') -eq 'edge') 'An explicitly chosen browser fails clearly instead of silently changing the choice'
+        $attempts.Clear();$missingFailure=$false
+        try { $null=Open-ReportBrowser -ReportPath (Join-Path $fixture 'missing.html') -BrowserDataDirectory $browserData -Candidates @($edge) } catch { $missingFailure=$true }
+        Assert ($missingFailure -and $attempts.Count -eq 0) 'A missing report fails before any browser launch'
+        $missingBrowser=$false
+        try { $null=Open-ReportBrowser -ReportPath $browserReport -BrowserDataDirectory $browserData -Browser brave -Candidates @($edge) } catch { $missingBrowser=$true }
+        Assert ($missingBrowser -and $attempts.Count -eq 0) 'An unavailable explicit browser reports an actionable error'
+    } finally { Set-Item Function:\Start-ReportBrowserProcess $nativeBrowserStarter }
     $parseFailures=@(
         foreach ($script in Get-ChildItem -LiteralPath $repo -Filter '*.ps1' -Recurse -File | Where-Object { $_.FullName -notlike '*\output\*' }) {
             $tokens=$null;$errors=$null

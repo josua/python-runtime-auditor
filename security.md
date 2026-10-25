@@ -13,6 +13,15 @@ JSON, the UI uses text nodes, and the report's policy blocks network connections
 No claim is made that a metadata audit establishes whether an executable is safe
 to run or whether an installation can be deleted.
 
+Opening a report is an explicit browser launch, separate from discovering Python
+executables. `-OpenReport` uses the browser launcher; it reads browser registration
+and starts one viewer. Chromium app mode writes a dedicated profile and cache to
+`%LOCALAPPDATA%\python-runtime-auditor\browser-data` by default (overridable with
+`-BrowserDataDirectory`). Fallback windows can use the browser's existing session.
+The report itself remains local with the same network-blocking content policy;
+the browser may perform its own background/update traffic. No local web server
+is started and no remote debugging port or sandbox-disabling flag is enabled.
+
 For a security issue, use GitHub's private vulnerability reporting if it is
 enabled on the repository. Otherwise report a minimal redacted issue without
 credentials, personal paths or a working exploit against someone else's machine.

@@ -5,7 +5,10 @@ param(
     [string]$OutputDirectory=(Join-Path $PSScriptRoot 'reports'),
     [string[]]$ExcludePaths=@(),
     [switch]$IncludeNetworkDrives,
-    [switch]$OpenReport
+    [switch]$OpenReport,
+    [ValidateSet('auto','edge','chrome','chromium','brave','firefox','vivaldi','opera','default')][string]$ReportBrowser='auto',
+    [string]$ReportBrowserPath,
+    [string]$BrowserDataDirectory=(Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'python-runtime-auditor/browser-data')
 )
 $ErrorActionPreference='Stop'
 $scan=@{OutputDirectory=$OutputDirectory;ExcludePaths=$ExcludePaths;PassThru=$true}
@@ -15,4 +18,7 @@ $result=& (Join-Path $PSScriptRoot 'scripts/list-python-executables.ps1') @scan
 if (-not $result.Completed) { throw 'Scan did not finish; inspect the partial JSONL and scan summary.' }
 & (Join-Path $PSScriptRoot 'scripts/analyze-python-inventory.ps1') -ReportDirectory $result.ReportDirectory
 & (Join-Path $PSScriptRoot 'scripts/new-audit-report.ps1') -ReportDirectory $result.ReportDirectory
-if ($OpenReport) { Start-Process -FilePath (Join-Path $result.ReportDirectory 'report.html') }
+if ($OpenReport) {
+    & (Join-Path $PSScriptRoot 'open-audit-report.ps1') -ReportPath (Join-Path $result.ReportDirectory 'report.html') `
+        -Browser $ReportBrowser -BrowserPath $ReportBrowserPath -BrowserDataDirectory $BrowserDataDirectory
+}

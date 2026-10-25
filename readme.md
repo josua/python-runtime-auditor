@@ -71,9 +71,21 @@ to that folder:
 .\start-python-runtime-auditor.ps1 -OutputDirectory 'D:\python-audits' -OpenReport
 ```
 
-`-OpenReport` opens the generated HTML report in your default browser after the
-scan and analysis finish. Omit it for unattended or scripted runs; the report
-is still generated.
+`-OpenReport` opens the generated HTML report in an application window after the
+scan and analysis finish. The launcher detects installed browsers and tries
+Edge, Chrome, Chromium, then Brave. A failed process start or immediate nonzero
+exit makes automatic selection try the next candidate. If only Firefox, Vivaldi
+or Opera is available, it uses an ordinary browser window; if no known browser
+can start, it asks Windows to open the HTML file with its default application.
+It opens one viewer, not every installed browser. Omit `-OpenReport` for
+unattended or scripted runs; the report is still generated.
+
+Application mode uses a dedicated profile and cache under
+`%LOCALAPPDATA%\python-runtime-auditor\browser-data`, with separate directories
+per browser installation. Personal Chromium profiles are not used. The disk-cache
+size hint is 64 MiB; this is not a hard limit on the whole browser profile.
+Browser startup is checked, but this does not prove that rendering succeeded or
+that browser policy allowed app mode. See [browser-launcher.md](docs/browser-launcher.md).
 
 A full scan can take several minutes on a machine with many directories.
 Progress shows actual directories and matches, without an invented percentage.
@@ -93,7 +105,24 @@ The original `python-inventory` JSON reports can be analyzed without rescanning:
 .\scripts\new-audit-report.ps1 -ReportDirectory 'D:\python-audits\my-scan'
 ```
 
-Open `report.html` in that directory. Its CSS and JavaScript are local files;
+To reopen the latest report in this repository's `reports` folder **without a
+new scan**, double-click `open-audit-report.cmd`. For a report saved elsewhere:
+
+```powershell
+.\open-audit-report.ps1 -ReportPath 'D:\python-audits\my-scan\report.html'
+```
+
+To list detected browsers without opening a report:
+
+```powershell
+.\open-audit-report.ps1 -ListBrowsers
+```
+
+To choose a browser explicitly, use `-Browser chrome` with the opener, or
+`-ReportBrowser chrome` with the auditor and `-OpenReport`. Use `default` to keep
+the ordinary Windows HTML association. These are alternatives, not extra steps.
+
+You can also open `report.html` directly. Its CSS and JavaScript are local files;
 the report needs no server, account, telemetry or network connection.
 
 ## Reports and limits
