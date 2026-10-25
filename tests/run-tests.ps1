@@ -78,6 +78,9 @@ try {
     Assert ($html.Contains('SolGPT 6.1') -and $html.Contains('Philippe Jos')) 'Report includes requested authorship and human project role'
     Assert ([regex]::Matches($html,'<svg class="icon"').Count -ge 11 -and $html -notmatch '<!--ICON:') 'Report embeds all navigation and metric SVG icons inline'
     Assert ($html.Contains('Copyright (c) 2020-2026 Paweł Kuna') -and $html.Contains('aria-hidden="true"')) 'Inline SVGs retain their license and decorative accessibility state'
+    $mark=[xml](Get-Content -LiteralPath (Join-Path $repo 'assets/python-runtime-auditor.svg') -Raw)
+    Assert ($mark.DocumentElement.NamespaceURI -eq 'http://www.w3.org/2000/svg' -and $mark.DocumentElement.viewBox -eq '0 0 512 512') 'Project icon has a valid standalone SVG namespace and view box'
+    Assert ($html.Contains('class="project-mark"') -and $html -notmatch '<!--PROJECT_MARK-->' -and (Test-Path -LiteralPath (Join-Path $scan.ReportDirectory 'assets/python-runtime-auditor.svg'))) 'Report embeds the project mark and ships its local favicon'
     . (Join-Path $PSScriptRoot 'package-inventory-tests.ps1')
     $empty=Join-Path $fixture 'empty'
     $null=New-Item -ItemType Directory -Path $empty

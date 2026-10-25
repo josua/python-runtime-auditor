@@ -1,1 +1,60 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="16" fill="#14283e"/><path d="M14 45V18h12c12 0 12 17 0 17h-5" fill="none" stroke="#8dd3ff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="m37 29 6 12 6-12m-6 12-5 10" fill="none" stroke="#f5cf76" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- Nouveau Dégradé Bleu (Navy vers Bleu Clair) -->
+    <linearGradient id="charteBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#16345F" /> <!-- Bleu navy -->
+      <stop offset="100%" stop-color="#7FA6DC" /> <!-- Bleu clair (Remplace le bleu roi) -->
+    </linearGradient>
+
+    <!-- Nouveau Dégradé Jaune Orangé -->
+    <linearGradient id="charteYellow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ED9A1B" /> <!-- Jaune orangé demandé -->
+      <stop offset="100%" stop-color="#FFC933" /> <!-- Jaune signal pour l'éclat -->
+    </linearGradient>
+
+    <!-- Dégradé de la Loupe (Rouge ocre vers Orange cuivre) -->
+    <linearGradient id="auditorGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#B3261E" /> <!-- Rouge ocre -->
+      <stop offset="100%" stop-color="#DB6A02" /> <!-- Orange cuivre -->
+    </linearGradient>
+
+    <!-- Ombre portée pour le relief -->
+    <filter id="dropShadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="8" stdDeviation="6" flood-color="#000000" flood-opacity="0.4" />
+    </filter>
+  </defs>
+
+  <!-- Fond sombre (Style Dashboard) -->
+  <rect width="512" height="512" rx="96" fill="#0d1117" />
+
+  <g filter="url(#dropShadow)">
+    <!-- Points de dépendance en arrière-plan (Bleu gris) -->
+    <circle cx="150" cy="150" r="10" fill="#D6E2F8" opacity="0.4"/>
+    <circle cx="362" cy="362" r="10" fill="#D6E2F8" opacity="0.4"/>
+
+    <!-- SERPENT SUPÉRIEUR (Bleu Navy & Bleu Clair) -->
+    <path d="M256,70 C180,70 175,105 175,135 L175,175 L260,175 L260,200 L145,200 C105,200 70,220 70,295 C70,370 105,385 145,385 L175,385 L175,340 C175,295 210,260 255,260 L340,260 C375,260 405,240 405,175 C405,110 370,70 310,70 Z" fill="url(#charteBlue)" />
+    <!-- Œil -->
+    <circle cx="215" cy="115" r="12" fill="#0d1117" />
+    <circle cx="215" cy="115" r="4" fill="#ECEFF3" /> <!-- Gris clair -->
+
+    <!-- SERPENT INFÉRIEUR (Jaune Orangé) -->
+    <path d="M256,442 C332,442 337,407 337,377 L337,337 L252,337 L252,312 L367,312 C407,312 442,292 442,217 C442,142 407,127 367,127 L337,127 L337,172 C337,217 302,252 257,252 L172,252 C137,252 107,272 107,337 C107,402 142,442 202,442 Z" fill="url(#charteYellow)" />
+    <!-- Œil -->
+    <circle cx="297" cy="397" r="12" fill="#0d1117" />
+    <circle cx="297" cy="397" r="4" fill="#ECEFF3" /> <!-- Gris clair -->
+
+    <!-- LOUPE & RÉTICULE EN DÉGRADÉ ROUGE/ORANGE -->
+    <!-- Anneau principal -->
+    <circle cx="256" cy="256" r="150" fill="none" stroke="url(#auditorGradient)" stroke-width="24" />
+
+    <!-- Repères du réticule -->
+    <path d="M256,76 L256,101 M256,411 L256,436 M76,256 L101,256 M411,256 L436,256" stroke="url(#auditorGradient)" stroke-width="12" stroke-linecap="round" />
+
+    <!-- Manche de la loupe -->
+    <rect x="340" y="340" width="36" height="115" rx="18" transform="rotate(-45 340 340)" fill="url(#auditorGradient)" />
+
+    <!-- Jointure du manche -->
+    <circle cx="362" cy="362" r="24" fill="url(#auditorGradient)" />
+  </g>
+</svg>

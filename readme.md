@@ -1,5 +1,7 @@
 # Python Runtime Auditor
 
+<p align="center"><img src="assets/python-runtime-auditor.svg" width="112" height="112" alt="Python Runtime Auditor: Python snakes inside a magnifying glass"></p>
+
 <p align="center"><img src="docs/assets/project-banner.svg" alt="Python Runtime Auditor — Every Python. In context. Find runtimes, trace dependencies, review before removing." width="1200"></p>
 
 <p align="center">

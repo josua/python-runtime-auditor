@@ -22,6 +22,8 @@ $payload=[ordered]@{
 # JSON is data inside a script element; escape HTML delimiters to prevent closing that element.
 $encoded=(ConvertTo-Json -InputObject $payload -Depth 20 -Compress).Replace('<','\u003c').Replace('>','\u003e').Replace('&','\u0026')
 $template=Get-Content -LiteralPath (Join-Path $assets 'report-template.html') -Raw
+$mark=Get-Content -LiteralPath (Join-Path $assets 'python-runtime-auditor.svg') -Raw
+$template=$template.Replace('<!--PROJECT_MARK-->',$mark.Replace('<svg ','<svg class="project-mark" aria-hidden="true" focusable="false" ').Trim())
 $template=[regex]::Replace($template,'<!--ICON:([a-z0-9-]+)-->',{
     param($match)
     $icon=Get-Content -LiteralPath (Join-Path $assets ('icons/'+$match.Groups[1].Value+'.svg')) -Raw
@@ -33,5 +35,5 @@ $html=$template.Replace('<!--AUDIT_DATA-->',$encoded)
 $html | Set-Content -LiteralPath (Join-Path $report 'report.html') -Encoding utf8
 $destination=Join-Path $report 'assets'
 $null=New-Item -ItemType Directory -Path $destination -Force
-foreach ($name in @('report.css','report.js')) { Copy-Item -LiteralPath (Join-Path $assets $name) -Destination (Join-Path $destination $name) -Force }
+foreach ($name in @('report.css','report.js','python-runtime-auditor.svg')) { Copy-Item -LiteralPath (Join-Path $assets $name) -Destination (Join-Path $destination $name) -Force }
 Write-Host "Offline HTML report: $(Join-Path $report 'report.html')"

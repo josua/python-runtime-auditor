@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.1 — 2026-10-25
+
+- Integrate the user-supplied Python snakes / magnifying-glass project mark in
+  the README, banner, website favicon, offline report header and report favicon.
+- Correct the supplied SVG namespace and intrinsic dimensions while preserving
+  its artwork, and keep the report's project mark embedded inline.
+
 ## 0.3.0 — 2026-10-25
 
 - Static package inventory per runtime, with names, versions, metadata paths,
