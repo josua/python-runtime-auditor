@@ -34,7 +34,12 @@ depend on them, and inspect command-routing conflicts **before changing anything
 Codex, at the request of Philippe Jos.** See [authors.md](authors.md) for the
 precise contribution history. MIT licensed.
 
-[![Offline dashboard using synthetic demonstration data](docs/images/report.png)](https://josua.github.io/python-runtime-auditor/demo/)
+[![Anonymized audit dashboard with 173 executable paths, 60 runtime folders and 22 virtual environments](docs/images/report.png)](https://josua.github.io/python-runtime-auditor/demo/)
+
+The interactive demo is based on an anonymized audit: **173 executable paths,
+60 runtime folders, 22 virtual environments and 2,592 package metadata entries**.
+Counts and relationships are retained; identifying paths, non-allowlisted package
+names and free-text details are replaced for publication.
 
 An executable count is not an installation count. A single Python distribution
 can contain `python.exe`, `pythonw.exe`, venv launcher templates and aliases.
@@ -242,8 +247,8 @@ enough; it is not claimed to be faster or more complete than every other tool.
 ## Website and visual credits
 
 [The project website](https://josua.github.io/python-runtime-auditor/) is published
-with GitHub Pages. Its interactive report demo contains synthetic data only;
-the website cannot scan a visitor's machine.
+with GitHub Pages. Its interactive report demo uses an anonymized reference audit;
+the website cannot scan a visitor's machine. The original local report is not published.
 
 Tabler pictograms come from The Grid's local icon library; technology tiles come
 from Skill Icons. Both are MIT licensed, with their notices retained. SVGs in
@@ -260,7 +265,7 @@ Tests require no external modules and do not execute the fixture executables.
 See [contributing.md](contributing.md) and [docs/report-contract.md](docs/report-contract.md).
 Windows is the tested target; cross-platform support is future work.
 
-Generate a synthetic preview without scanning any drives:
+Regenerate the anonymized reference demo without scanning any drives:
 
 ```powershell
 .\scripts\new-demo-report.ps1

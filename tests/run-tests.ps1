@@ -132,6 +132,7 @@ try {
         try { $null=Open-ReportBrowser -ReportPath $browserReport -BrowserDataDirectory $browserData -Browser brave -Candidates @($edge) } catch { $missingBrowser=$true }
         Assert ($missingBrowser -and $attempts.Count -eq 0) 'An unavailable explicit browser reports an actionable error'
     } finally { Set-Item Function:\Start-ReportBrowserProcess $nativeBrowserStarter }
+    . (Join-Path $PSScriptRoot 'demo-tests.ps1')
     $parseFailures=@(
         foreach ($script in Get-ChildItem -LiteralPath $repo -Filter '*.ps1' -Recurse -File | Where-Object { $_.FullName -notlike '*\output\*' }) {
             $tokens=$null;$errors=$null

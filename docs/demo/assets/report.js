@@ -76,8 +76,11 @@
   $('metric-runtimes').textContent = text(audit.summary.RuntimeFolders);
   $('metric-venvs').textContent = text(audit.summary.VirtualEnvironments);
   $('metric-findings').textContent = text(audit.summary.Findings);
-  $('coverage').textContent = audit.scan.IsSynthetic ? 'Synthetic demonstration — no filesystem was scanned. All paths and values below are examples.' : `${audit.scan.Completed ? 'Completed' : 'Partial'} · ${Number(audit.scan.DirectoriesVisited).toLocaleString()} directories · ${audit.scan.ElapsedSeconds} s · Roots: ${list(audit.scan.Roots).join(', ')}`;
-  if (audit.scan.IsSynthetic) document.querySelector('.status').textContent='Synthetic demo';
+  $('coverage').textContent = audit.scan.IsAnonymized
+    ? `Anonymized reference audit · ${Number(audit.summary.ExecutablePaths).toLocaleString()} executable paths · ${Number(audit.scan.DirectoriesVisited).toLocaleString()} directories · ${audit.scan.ElapsedSeconds} s. Counts, versions and dependency relations come from the source audit; identifying details have been replaced. This public demo does not scan your computer.`
+    : audit.scan.IsSynthetic ? 'Synthetic demonstration — no filesystem was scanned. All paths and values below are examples.' : `${audit.scan.Completed ? 'Completed' : 'Partial'} · ${Number(audit.scan.DirectoriesVisited).toLocaleString()} directories · ${audit.scan.ElapsedSeconds} s · Roots: ${list(audit.scan.Roots).join(', ')}`;
+  if (audit.scan.IsAnonymized) document.querySelector('.status').textContent='Anonymized audit';
+  else if (audit.scan.IsSynthetic) document.querySelector('.status').textContent='Synthetic demo';
   let current = 'runtimes';
   const sorts = {runtimes:{index:4,direction:-1},files:{index:5,direction:-1},packages:{index:0,direction:1}};
   for (const environment of packageEnvironments) {

@@ -3,6 +3,13 @@
 `scan-summary.json` uses `SchemaVersion: 1` for new scans. Earlier inventory
 reports without that field remain accepted by the analyzer.
 
+The public reference fixture sets `IsAnonymized: true` in its scan and audit
+summaries. Counts, versions, dates and relationships originate from an actual
+audit; paths, non-allowlisted package names and free-text details are replaced.
+The report labels that fixture as an anonymized audit and never implies that
+the public web page scanned its visitor. `IsSynthetic` remains supported for
+fully invented test fixtures.
+
 `python-executables.json` is an array with `Path`, `ResolvedPath`, `FileVersion`,
 `Kind`, `IsAlias` and `Bytes`. `FileVersion` may be null and may describe a
 launcher/application rather than CPython. Files are matched by conventional
